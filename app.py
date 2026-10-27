@@ -355,11 +355,15 @@ if page == "🏠 Home Dashboard":
 
     
 
-def go_to_analyzer():
-    st.session_state["page"] = "🔍 Complaint Analyzer"
 
-if st.button("🚀 Start Exploring", on_click=go_to_analyzer):
-    pass
+    st.button(
+        "🚀 Start Exploring",
+        key="start_exploring",
+        on_click=lambda: st.session_state.update(
+            {"page": "🔍 Complaint Analyzer"}
+        )
+    )
+
 
 
 
