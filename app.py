@@ -354,9 +354,13 @@ if page == "🏠 Home Dashboard":
     st.plotly_chart(fig, use_container_width=True)
 
     
-if st.button("🚀 Start Exploring"):
+
+def go_to_analyzer():
     st.session_state["page"] = "🔍 Complaint Analyzer"
-    st.rerun()
+
+if st.button("🚀 Start Exploring", on_click=go_to_analyzer):
+    pass
+
 
 
 
