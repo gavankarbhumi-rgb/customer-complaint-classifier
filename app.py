@@ -529,6 +529,7 @@ elif page == "🔍 Complaint Analyzer":
 # PAGE 3: ANALYTICS & INSIGHTS
 # ====================================================
 
+
 elif page == "📈 Analytics & Insights":
     st.title("📈 Analytics & Insights")
 
@@ -568,7 +569,6 @@ elif page == "📈 Analytics & Insights":
         **💡 Tip:** Use the charts to identify which complaint
         categories appear most frequently.
         """)
-   
 
     st.subheader("Model Accuracy")
 
@@ -580,23 +580,24 @@ elif page == "📈 Analytics & Insights":
         text="Test Accuracy (%)",
         template="plotly_dark"
     )
+
     fig.update_layout(
-    yaxis_range=[0, 100],
-    showlegend=False,
-    paper_bgcolor="#0F0A23",
-    plot_bgcolor="#1A1237",
-    font=dict(color="#F3E8FF"),
-    title_font=dict(color="#C084FC"),
-    xaxis=dict(
-        color="#DDD6FE",
-        showgrid=False
-    ),
-    yaxis=dict(
-        color="#DDD6FE",
-        gridcolor="rgba(192,132,252,0.2)",
-        title="Test Accuracy (%)"
+        yaxis_range=[0, 100],
+        showlegend=False,
+        paper_bgcolor="#0F0A23",
+        plot_bgcolor="#1A1237",
+        font=dict(color="#F3E8FF"),
+        title_font=dict(color="#C084FC"),
+        xaxis=dict(
+            color="#DDD6FE",
+            showgrid=False
+        ),
+        yaxis=dict(
+            color="#DDD6FE",
+            gridcolor="rgba(192,132,252,0.2)",
+            title="Test Accuracy (%)"
+        )
     )
-)
 
     st.plotly_chart(fig, use_container_width=True)
 
@@ -615,57 +616,60 @@ elif page == "📈 Analytics & Insights":
 
     chart_data = category_metrics.melt(
         id_vars="Category",
-        value_vars=["Precision (%)", "Recall (%)", "F1 Score (%)"],
+        value_vars=[
+            "Precision (%)",
+            "Recall (%)",
+            "F1 Score (%)"
+        ],
         var_name="Metric",
         value_name="Score (%)"
     )
 
     fig2 = px.bar(
-    chart_data,
-    x="Category",
-    y="Score (%)",
-    color="Metric",
-    barmode="group",
-    template="plotly_dark",
-    title="CNN Performance by Category",
-    color_discrete_map={
-        "Precision (%)": "#A855F7",
-        "Recall (%)": "#22D3EE",
-        "F1 Score (%)": "#F472B6"
-    }
-)
+        chart_data,
+        x="Category",
+        y="Score (%)",
+        color="Metric",
+        barmode="group",
+        template="plotly_dark",
+        title="CNN Performance by Category",
+        color_discrete_map={
+            "Precision (%)": "#A855F7",
+            "Recall (%)": "#22D3EE",
+            "F1 Score (%)": "#F472B6"
+        }
+    )
 
-fig2.update_layout(
-    paper_bgcolor="#0F0A23",
-    plot_bgcolor="#1A1237",
-    font=dict(color="#F3E8FF"),
-    title_font=dict(color="#C084FC", size=20),
-    legend=dict(
+    fig2.update_layout(
+        paper_bgcolor="#0F0A23",
+        plot_bgcolor="#1A1237",
         font=dict(color="#F3E8FF"),
-        bgcolor="rgba(15,10,35,0)"
-    ),
-    xaxis=dict(
-        color="#DDD6FE",
-        showgrid=False,
-        tickangle=-15,
-        title="Category"
-    ),
-    yaxis=dict(
-        color="#DDD6FE",
-        gridcolor="rgba(192,132,252,0.2)",
-        title="Score (%)",
-        range=[0, 100]
-    ),
-    bargap=0.22
-)
+        title_font=dict(color="#C084FC", size=20),
+        legend=dict(
+            font=dict(color="#F3E8FF"),
+            bgcolor="rgba(15,10,35,0)"
+        ),
+        xaxis=dict(
+            color="#DDD6FE",
+            showgrid=False,
+            tickangle=-15,
+            title="Category"
+        ),
+        yaxis=dict(
+            color="#DDD6FE",
+            gridcolor="rgba(192,132,252,0.2)",
+            title="Score (%)",
+            range=[0, 100]
+        ),
+        bargap=0.22
+    )
 
-st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
-st.info(
-    "The CNN achieved 88.34% test accuracy in the "
-    "recorded model evaluation."
-)
-
+    st.info(
+        "The CNN achieved 88.34% test accuracy in the "
+        "recorded model evaluation."
+    )
 
 # ====================================================
 # PAGE 4: COMPLAINT HISTORY
