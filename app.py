@@ -1,4 +1,6 @@
 
+import json
+import streamlit.components.v1 as components
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -109,6 +111,67 @@ complaint = st.text_area(
     ),
     height=150
 )
+
+if complaint.strip():
+    components.html(
+        f"""
+        <div style="font-family: sans-serif;">
+            <button
+                onclick="speakComplaint()"
+                style="
+                    background: #6C63FF;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    cursor: pointer;
+                "
+            >
+                🔊 Listen to Complaint
+            </button>
+
+            <button
+                onclick="stopSpeaking()"
+                style="
+                    background: #444;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    cursor: pointer;
+                    margin-left: 8px;
+                "
+            >
+                ⏹ Stop
+            </button>
+
+            <script>
+                const complaintText = {json.dumps(complaint)};
+
+                function speakComplaint() {{
+                    window.speechSynthesis.cancel();
+
+                    const message = new SpeechSynthesisUtterance(
+                        complaintText
+                    );
+
+                    message.lang = "en-IN";
+                    message.rate = 0.95;
+                    message.pitch = 1;
+
+                    window.speechSynthesis.speak(message);
+                }}
+
+                function stopSpeaking() {{
+                    window.speechSynthesis.cancel();
+                }}
+            </script>
+        </div>
+        """,
+        height=65
+    )
 
 if st.button("🚀 Classify Complaint", type="primary"):
     if not complaint.strip():
