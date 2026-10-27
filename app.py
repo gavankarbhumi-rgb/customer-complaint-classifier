@@ -550,9 +550,45 @@ elif page == "🔍 Complaint Analyzer":
 # ====================================================
 
 elif page == "📈 Analytics & Insights":
-
     st.title("📈 Analytics & Insights")
-    st.write("Explore the evaluation results of the trained models.")
+
+    st.write(
+        "Explore complaint trends and understand "
+        "the model's classification results."
+    )
+
+    instruction_text = """
+    Welcome to Analytics and Insights.
+
+    Here you can explore complaint statistics,
+    understand complaint categories, and discover
+    patterns in customer complaints.
+
+    Review the charts and graphs to compare categories
+    and understand the insights from the dataset.
+    """
+
+    voice_player(
+        instruction_text,
+        "🔊 Listen to Analytics Instructions"
+    )
+
+    with st.expander(
+        "📖 How to Use Analytics & Insights",
+        expanded=True
+    ):
+        st.markdown("""
+        **Follow these simple steps:**
+
+        1. Explore the available charts and graphs.
+        2. Compare the different complaint categories.
+        3. Review the statistics and trends.
+        4. Use the insights to understand customer complaints.
+
+        **💡 Tip:** Use the charts to identify which complaint
+        categories appear most frequently.
+        """)
+   
 
     st.subheader("Model Accuracy")
 
@@ -609,9 +645,43 @@ elif page == "📈 Analytics & Insights":
 # ====================================================
 
 elif page == "🗂️ Complaint History":
-
     st.title("🗂️ Complaint History")
-    st.write("Previously classified complaints are listed here.")
+
+    instruction_text = """
+    Welcome to Complaint History.
+
+    Here you can review previously analyzed complaints
+    and their predicted categories.
+
+    Check the available history to understand
+    your previous classification results.
+
+    If no complaints have been analyzed yet,
+    classify a complaint first to see whether
+    your app saves its history.
+    """
+
+    voice_player(
+        instruction_text,
+        "🔊 Listen to History Instructions"
+    )
+
+    with st.expander(
+        "📖 How to Use Complaint History",
+        expanded=True
+    ):
+        st.markdown("""
+        **Follow these simple steps:**
+
+        1. View your previously analyzed complaints.
+        2. Check the predicted category for each complaint.
+        3. Review any confidence scores or saved details.
+        4. If the history is empty, analyze a complaint first.
+
+        **💡 Tip:** Avoid entering passwords or other sensitive
+        personal information in complaints.
+        """)
+
 
     history = get_history()
 
@@ -705,7 +775,43 @@ elif page == "🗂️ Complaint History":
 elif page == "🎙️ Voice Assistant & Help":
 
     st.title("🎙️ Voice Assistant & Help")
+    instruction_text = """
+    Welcome to Voice Assistant and Help.
 
+    This page helps you understand how to use
+    the Complaint Intelligence application.
+
+    Click the Listen to Instructions button
+    to hear these instructions aloud.
+
+    You can also explore the Complaint Analyzer
+    to classify customer complaints and visit
+    Analytics and Insights to review model performance.
+
+    Visit Complaint History to review saved complaints.
+    """
+
+    voice_player(
+        instruction_text,
+        "🔊 Listen to Help Instructions"
+    )
+
+    with st.expander(
+        "📖 How to Use Voice Assistant & Help",
+        expanded=True
+    ):
+        st.markdown("""
+        **Follow these simple steps:**
+
+        1. Click the **🔊 Listen to Help Instructions** button.
+        2. Listen to the spoken guidance.
+        3. Visit Complaint Analyzer to classify complaints.
+        4. Explore Analytics & Insights to view model results.
+        5. Visit Complaint History to review saved complaints.
+
+        **💡 Tip:** If the audio does not play, check your
+        browser's sound settings and click the button again.
+        """)
     st.write(
         "Your guide to using the Complaint Intelligence website."
     )
