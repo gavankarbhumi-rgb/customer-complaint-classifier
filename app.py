@@ -1,24 +1,31 @@
 
 import json
-import streamlit.components.v1 as components
-import streamlit as st
+import os
+import re
+import pickle
+import sqlite3
+from datetime import datetime
+
+import numpy as np
 import pandas as pd
 import plotly.express as px
-import numpy as np
-import pickle
-import re
+import streamlit as st
+import streamlit.components.v1 as components
 
 from huggingface_hub import hf_hub_download
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+
+# ---------------- PAGE CONFIG ----------------
+
 st.set_page_config(
     page_title="Complaint Intelligence",
-    page_icon="📊",
+    page_icon="💜",
     layout="wide"
 )
 
-# ===== PREMIUM DARK PURPLE UI =====
+# ---------------- PREMIUM UI ----------------
 
 st.markdown("""
 <style>
@@ -26,118 +33,49 @@ st.markdown("""
 
 .stApp {
     background:
-        radial-gradient(ellipse at top left, #25205a 0%, transparent 40%),
-        linear-gradient(135deg, #080b18 0%, #10152b 55%, #17112e 100%);
+      radial-gradient(ellipse at top left,#25205a 0%,transparent 42%),
+      linear-gradient(135deg,#080b18,#10152b 55%,#17112e);
     color: #f5f3ff;
-    font-family: 'Inter', sans-serif;
+    font-family: Inter, sans-serif;
 }
-
 .block-container {
+    max-width: 1400px;
     padding-top: 2rem;
     padding-bottom: 3rem;
-    max-width: 1400px;
 }
-
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #11152b 0%, #17112e 100%);
-    border-right: 1px solid rgba(167, 139, 250, 0.22);
+    background: linear-gradient(180deg,#11152b,#17112e);
+    border-right: 1px solid #39305d;
 }
-
-[data-testid="stSidebar"] h1 {
-    color: #c4b5fd;
-    font-weight: 800;
-}
-
-h1, h2, h3 {
-    color: #f5f3ff !important;
-    letter-spacing: -0.5px;
-}
-
-p, label, .stMarkdown {
-    color: #d6d3e8;
-}
-
+h1,h2,h3 { color:#f5f3ff !important; }
+p,label { color:#d6d3e8; }
 div[data-testid="stMetric"] {
-    background: linear-gradient(135deg, #1b2140, #25204b);
-    border: 1px solid rgba(167, 139, 250, 0.28);
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+    background:linear-gradient(135deg,#1b2140,#25204b);
+    border:1px solid #49416f;
+    padding:20px;
+    border-radius:18px;
 }
-
-div[data-testid="stMetricLabel"] {
-    color: #c4b5fd;
+.stButton>button {
+    background:linear-gradient(100deg,#7c3aed,#a855f7);
+    color:white;
+    border:1px solid #a78bfa;
+    border-radius:12px;
+    min-height:44px;
+    font-weight:700;
 }
-
-div[data-testid="stMetricValue"] {
-    color: #ffffff;
-    font-weight: 800;
+.stTextArea textarea, .stTextInput input {
+    background:#131a31;
+    color:white;
+    border:1px solid #49416f;
+    border-radius:12px;
 }
-
-.stButton > button {
-    background: linear-gradient(100deg, #7c3aed, #a855f7);
-    color: #ffffff;
-    border: 1px solid rgba(216, 180, 254, 0.35);
-    border-radius: 12px;
-    padding: 0.65rem 1.15rem;
-    font-weight: 700;
-    min-height: 45px;
-    transition: all 0.2s ease;
-    box-shadow: 0 5px 18px rgba(124, 58, 237, 0.22);
-}
-
-.stButton > button:hover {
-    background: linear-gradient(100deg, #8b5cf6, #c084fc);
-    border-color: #ddd6fe;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
-    color: #ffffff;
-}
-
-.stTextArea textarea {
-    background: #131a31;
-    color: #ffffff;
-    border: 1px solid #49416f;
-    border-radius: 14px;
-}
-
-.stTextArea textarea:focus {
-    border-color: #a78bfa;
-    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.18);
-}
-
-div[data-baseweb="select"] > div {
-    background-color: #171d36;
-    border-color: #49416f;
-    border-radius: 10px;
-}
-
-hr {
-    border-color: rgba(167, 139, 250, 0.2);
-}
-
-[data-testid="stAlert"] {
-    border-radius: 12px;
-}
-
-[data-testid="stPlotlyChart"] {
-    background: rgba(24, 29, 55, 0.65);
-    border: 1px solid rgba(167, 139, 250, 0.16);
-    border-radius: 16px;
-    padding: 8px;
-}
-
-footer {
-    visibility: hidden;
-}
-
-#MainMenu {
-    visibility: hidden;
-}
+hr { border-color:#39305d; }
+footer,#MainMenu { visibility:hidden; }
 </style>
 """, unsafe_allow_html=True)
 
-# ===== SIDEBAR NAVIGATION =====
+
+# ---------------- NAVIGATION ----------------
 
 st.sidebar.markdown("# 💜 Complaint AI")
 st.sidebar.caption("Intelligent Complaint Management")
@@ -148,25 +86,42 @@ page = st.sidebar.radio(
         "🏠 Home Dashboard",
         "🔍 Complaint Analyzer",
         "📈 Analytics & Insights",
+        "🗂️ Complaint History",
         "🎙️ Voice Assistant & Help"
     ]
 )
 
 st.sidebar.divider()
-st.sidebar.markdown("### 🤖 Model Status")
-st.sidebar.caption("CNN Deep Learning Model")
-st.sidebar.caption("Test Accuracy: 88.34%")
+st.sidebar.markdown("### 🤖 AI Model")
+st.sidebar.caption("CNN Deep Learning")
+st.sidebar.caption("Test accuracy: 88.34%")
+st.sidebar.caption("5 complaint categories")
+
+
+# ---------------- MODEL SETTINGS ----------------
 
 MODEL_REPO = "Bhumiiiiii26/customer-complaint-cnn"
 MODEL_FILE = "customer_complaint_cnn (2).keras"
 
+DB_PATH = "complaint_history.db"
+
+CATEGORY_NAMES = {
+    "credit_card": "Credit Card",
+    "credit_reporting": "Credit Reporting",
+    "debt_collection": "Debt Collection",
+    "mortgages_and_loans": "Mortgages and Loans",
+    "retail_banking": "Retail Banking"
+}
+
+
 @st.cache_resource
 def load_ai_model():
-    model_path = hf_hub_download(
+    path = hf_hub_download(
         repo_id=MODEL_REPO,
         filename=MODEL_FILE
     )
-    return load_model(model_path, compile=False)
+    return load_model(path, compile=False)
+
 
 @st.cache_resource
 def load_assets():
@@ -183,243 +138,537 @@ def load_assets():
         vocab = pickle.load(f)
 
     with open(encoder_path, "rb") as f:
-        label_encoder = pickle.load(f)
+        encoder = pickle.load(f)
 
-    return vocab, label_encoder
+    return vocab, encoder
 
-st.title("📊 Customer Complaint Intelligence")
-st.markdown(
-    "### AI-powered complaint analysis and classification"
+
+# ---------------- LOCAL HISTORY DATABASE ----------------
+
+def init_database():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS complaints (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                complaint TEXT NOT NULL,
+                category TEXT NOT NULL,
+                confidence REAL NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        """)
+
+
+def save_complaint(complaint, category, confidence):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            INSERT INTO complaints
+            (complaint, category, confidence, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (
+            complaint,
+            category,
+            confidence,
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ))
+
+
+def get_history():
+    with sqlite3.connect(DB_PATH) as conn:
+        return pd.read_sql_query(
+            "SELECT * FROM complaints ORDER BY id DESC",
+            conn
+        )
+
+
+init_database()
+
+
+# ---------------- VOICE WELCOME ----------------
+
+WELCOME_TEXT = (
+    "Welcome to Complaint Intelligence! "
+    "Your AI powered customer complaint assistant. "
+    "You can analyze complaints, explore analytics, "
+    "view your complaint history, and learn how the "
+    "website works. Select Start Exploring to begin."
 )
-st.write(
-    "Enter a customer complaint below to predict its category "
-    "using our trained CNN deep learning model."
-)
 
-try:
-    model = load_ai_model()
-    vocab, label_encoder = load_assets()
-    model_ready = True
-    st.success("AI model loaded successfully!")
-except Exception as e:
-    model_ready = False
-    st.error(
-        "The AI model could not be loaded. "
-        "Please check the model repository and file names."
+
+def voice_player(text_to_speak, button_label="🔊 Play Voice"):
+    safe_text = json.dumps(text_to_speak)
+
+    components.html(
+        f"""
+        <div style="font-family:Arial;color:white;">
+          <button onclick="speakText()"
+            style="background:linear-gradient(90deg,#7c3aed,#a855f7);
+            color:white;border:0;border-radius:10px;
+            padding:12px 18px;cursor:pointer;font-weight:bold;">
+            {button_label}
+          </button>
+          <button onclick="stopVoice()"
+            style="background:#29243f;color:white;border:1px solid #62558a;
+            border-radius:10px;padding:12px 18px;cursor:pointer;">
+            ⏹ Stop
+          </button>
+          <script>
+            const spokenText = {safe_text};
+            function speakText() {{
+              window.speechSynthesis.cancel();
+              const message = new SpeechSynthesisUtterance(spokenText);
+              message.lang = "en-IN";
+              message.rate = 0.92;
+              window.speechSynthesis.speak(message);
+            }}
+            function stopVoice() {{
+              window.speechSynthesis.cancel();
+            }}
+          </script>
+        </div>
+        """,
+        height=60
     )
-    st.code(str(e))
 
-# Dashboard metrics
-col1, col2, col3 = st.columns(3)
-col1.metric("Best Model", "CNN")
-col2.metric("Test Accuracy", "88.34%")
-col3.metric("Complaint Categories", "5")
 
-# Model comparison
+# ---------------- SHARED MODEL METRICS ----------------
+
 comparison = pd.DataFrame({
     "Model": ["CNN", "Baseline", "LSTM"],
     "Test Accuracy (%)": [88.34, 87.92, 86.94]
 })
 
-st.subheader("📈 Model Performance Comparison")
+category_metrics = pd.DataFrame({
+    "Category": [
+        "Credit Card",
+        "Credit Reporting",
+        "Debt Collection",
+        "Mortgages and Loans",
+        "Retail Banking"
+    ],
+    "Precision (%)": [77.59, 91.35, 83.51, 88.07, 88.00],
+    "Recall (%)": [81.21, 94.77, 74.90, 81.81, 85.37],
+    "F1 Score (%)": [79.36, 93.03, 78.97, 84.82, 86.67]
+})
 
-fig = px.bar(
-    comparison,
-    x="Model",
-    y="Test Accuracy (%)",
-    color="Model",
-    text="Test Accuracy (%)",
-    template="plotly_dark",
-    title="Test Accuracy by Model"
-)
-fig.update_layout(
-    yaxis_range=[0, 100],
-    showlegend=False
-)
-st.plotly_chart(fig, use_container_width=True)
 
-# Complaint prediction
-st.divider()
-st.subheader("🔍 Analyze a Customer Complaint")
+# ====================================================
+# PAGE 1: HOME DASHBOARD
+# ====================================================
 
-complaint = st.text_area(
-    "Enter complaint details",
-    placeholder=(
-        "Example: I was charged a fee on my credit card "
-        "that I do not recognize."
-    ),
-    height=150
-)
+if page == "🏠 Home Dashboard":
 
-if complaint.strip():
-    components.html(
-        f"""
-        <div style="font-family: sans-serif;">
-            <button
-                onclick="speakComplaint()"
-                style="
-                    background: #6C63FF;
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 10px;
-                    font-size: 15px;
-                    cursor: pointer;
-                "
-            >
-                🔊 Listen to Complaint
-            </button>
-
-            <button
-                onclick="stopSpeaking()"
-                style="
-                    background: #444;
-                    color: white;
-                    border: none;
-                    padding: 12px 20px;
-                    border-radius: 10px;
-                    font-size: 15px;
-                    cursor: pointer;
-                    margin-left: 8px;
-                "
-            >
-                ⏹ Stop
-            </button>
-
-            <script>
-                const complaintText = {json.dumps(complaint)};
-
-                function speakComplaint() {{
-                    window.speechSynthesis.cancel();
-
-                    const message = new SpeechSynthesisUtterance(
-                        complaintText
-                    );
-
-                    message.lang = "en-IN";
-                    message.rate = 0.95;
-                    message.pitch = 1;
-
-                    window.speechSynthesis.speak(message);
-                }}
-
-                function stopSpeaking() {{
-                    window.speechSynthesis.cancel();
-                }}
-            </script>
-        </div>
-        """,
-        height=65
+    st.title("💜 Welcome to Complaint Intelligence")
+    st.markdown(
+        "### Understand customer complaints with AI."
     )
 
-if st.button("🚀 Classify Complaint", type="primary"):
-    if not complaint.strip():
-        st.warning("Please enter a complaint first.")
-    elif not model_ready:
-        st.error("The AI model is not ready yet.")
+    st.write(
+        "An intelligent complaint classification system "
+        "powered by your trained CNN deep learning model."
+    )
+
+    voice_player(WELCOME_TEXT, "🔊 Start Voice Welcome")
+
+    st.divider()
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Best Model", "CNN")
+    c2.metric("Test Accuracy", "88.34%")
+    c3.metric("Categories", "5")
+
+    st.subheader("✨ What can you do here?")
+
+    a, b = st.columns(2)
+
+    with a:
+        st.markdown("#### 🔍 Complaint Analyzer")
+        st.write("Enter a complaint and predict its category.")
+
+        st.markdown("#### 📈 Analytics & Insights")
+        st.write("Explore model performance and evaluation metrics.")
+
+    with b:
+        st.markdown("#### 🗂️ Complaint History")
+        st.write("Review previously classified complaints.")
+
+        st.markdown("#### 🎙️ Voice Assistant")
+        st.write("Listen to the welcome message and instructions.")
+
+    st.subheader("📊 Model Performance")
+
+    fig = px.bar(
+        comparison,
+        x="Model",
+        y="Test Accuracy (%)",
+        color="Model",
+        text="Test Accuracy (%)",
+        template="plotly_dark",
+        title="Model Accuracy Comparison"
+    )
+    fig.update_layout(yaxis_range=[0, 100], showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
+
+    if st.button("🚀 Start Exploring"):
+        st.session_state["navigation_page"] = "🔍 Complaint Analyzer"
+        st.rerun()
+
+
+# ====================================================
+# PAGE 2: COMPLAINT ANALYZER
+# ====================================================
+
+elif page == "🔍 Complaint Analyzer":
+
+    st.title("🔍 Complaint Analyzer")
+    st.write("Enter the complaint below to classify it using CNN.")
+
+    complaint = st.text_area(
+        "Customer complaint",
+        placeholder=(
+            "Example: I noticed a fee on my credit card "
+            "that I do not recognize."
+        ),
+        height=180,
+        key="complaint_input"
+    )
+
+    if complaint.strip():
+        voice_player(
+            complaint,
+            "🔊 Listen to Complaint"
+        )
+
+    if st.button("🚀 Classify Complaint", type="primary"):
+
+        if not complaint.strip():
+            st.warning("Please enter a complaint first.")
+
+        else:
+            try:
+                with st.spinner("Loading AI model and analyzing..."):
+                    model = load_ai_model()
+                    vocab, encoder = load_assets()
+
+                    cleaned = re.sub(
+                        r"\s+", " ", complaint.lower()
+                    ).strip()
+
+                    tokens = cleaned.split()
+                    oov_id = vocab.get("<OOV>")
+
+                    if oov_id is None:
+                        st.error(
+                            "Vocabulary is missing the <OOV> token."
+                        )
+                    else:
+                        sequence = [
+                            vocab.get(word, oov_id)
+                            for word in tokens
+                        ]
+
+                        padded = pad_sequences(
+                            [sequence],
+                            maxlen=240,
+                            padding="post",
+                            truncating="post",
+                            value=0
+                        )
+
+                        probabilities = model.predict(
+                            padded, verbose=0
+                        )[0]
+
+                        index = int(np.argmax(probabilities))
+                        raw_category = str(
+                            encoder.inverse_transform([index])[0]
+                        )
+
+                        category = CATEGORY_NAMES.get(
+                            raw_category,
+                            raw_category.replace("_", " ").title()
+                        )
+
+                        confidence = float(
+                            probabilities[index] * 100
+                        )
+
+                        save_complaint(
+                            complaint,
+                            category,
+                            confidence
+                        )
+
+                        st.session_state["last_result"] = {
+                            "complaint": complaint,
+                            "category": category,
+                            "confidence": confidence,
+                            "probabilities": probabilities.tolist(),
+                            "labels": [
+                                CATEGORY_NAMES.get(
+                                    str(x),
+                                    str(x).replace("_", " ").title()
+                                )
+                                for x in encoder.classes_
+                            ]
+                        }
+
+                st.success("Complaint classified and saved to history!")
+
+            except Exception as e:
+                st.error("Could not classify the complaint.")
+                st.code(str(e))
+
+    result = st.session_state.get("last_result")
+
+    if result:
+        st.divider()
+        st.subheader("✅ Prediction Result")
+        st.success(f"Predicted Category: {result['category']}")
+
+        st.metric(
+            "Model Confidence",
+            f"{result['confidence']:.2f}%"
+        )
+
+        if result["confidence"] < 60:
+            st.warning(
+                "The model is less confident. Please review "
+                "the prediction before acting on it."
+            )
+
+        score_data = pd.DataFrame({
+            "Category": result["labels"],
+            "Probability (%)": (
+                np.array(result["probabilities"]) * 100
+            )
+        }).sort_values("Probability (%)")
+
+        fig = px.bar(
+            score_data,
+            x="Probability (%)",
+            y="Category",
+            orientation="h",
+            template="plotly_dark",
+            title="Category Probability Scores"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+
+# ====================================================
+# PAGE 3: ANALYTICS & INSIGHTS
+# ====================================================
+
+elif page == "📈 Analytics & Insights":
+
+    st.title("📈 Analytics & Insights")
+    st.write("Explore the evaluation results of the trained models.")
+
+    st.subheader("Model Accuracy")
+
+    fig = px.bar(
+        comparison,
+        x="Model",
+        y="Test Accuracy (%)",
+        color="Model",
+        text="Test Accuracy (%)",
+        template="plotly_dark"
+    )
+    fig.update_layout(yaxis_range=[0, 100], showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.subheader("CNN Classification Metrics")
+
+    st.caption(
+        "These are the saved test-set evaluation results "
+        "from the trained CNN model."
+    )
+
+    st.dataframe(
+        category_metrics,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    chart_data = category_metrics.melt(
+        id_vars="Category",
+        value_vars=["Precision (%)", "Recall (%)", "F1 Score (%)"],
+        var_name="Metric",
+        value_name="Score (%)"
+    )
+
+    fig2 = px.bar(
+        chart_data,
+        x="Category",
+        y="Score (%)",
+        color="Metric",
+        barmode="group",
+        template="plotly_dark",
+        title="CNN Performance by Category"
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+    st.info(
+        "The CNN achieved 88.34% test accuracy in the "
+        "recorded model evaluation."
+    )
+
+
+# ====================================================
+# PAGE 4: COMPLAINT HISTORY
+# ====================================================
+
+elif page == "🗂️ Complaint History":
+
+    st.title("🗂️ Complaint History")
+    st.write("Previously classified complaints are listed here.")
+
+    history = get_history()
+
+    if history.empty:
+        st.info(
+            "No saved complaints yet. Visit Complaint Analyzer "
+            "and classify your first complaint."
+        )
+
     else:
-        try:
-            cleaned = re.sub(
-                r"\s+", " ", complaint.lower()
-            ).strip()
+        c1, c2 = st.columns(2)
+        c1.metric("Saved Complaints", len(history))
+        c2.metric(
+            "Categories Found",
+            history["category"].nunique()
+        )
 
-            tokens = cleaned.split()
-            oov_id = vocab.get("<OOV>")
+        search_text = st.text_input(
+            "🔎 Search complaint text"
+        )
 
-            if oov_id is None:
-                st.error(
-                    "The vocabulary is missing its <OOV> token."
+        all_categories = sorted(history["category"].unique())
+        selected_categories = st.multiselect(
+            "Filter by category",
+            options=all_categories,
+            default=all_categories
+        )
+
+        filtered = history[
+            history["category"].isin(selected_categories)
+        ]
+
+        if search_text.strip():
+            filtered = filtered[
+                filtered["complaint"].str.contains(
+                    search_text,
+                    case=False,
+                    na=False,
+                    regex=False
                 )
-            else:
-                sequence = [
-                    vocab.get(word, oov_id)
-                    for word in tokens
-                ]
+            ]
 
-                padded = pad_sequences(
-                    [sequence],
-                    maxlen=240,
-                    padding="post",
-                    truncating="post",
-                    value=0
-                )
+        st.dataframe(
+            filtered[
+                ["id", "created_at", "complaint",
+                 "category", "confidence"]
+            ],
+            use_container_width=True,
+            hide_index=True
+        )
 
-                probabilities = model.predict(
-                    padded, verbose=0
-                )[0]
+        csv_data = filtered.to_csv(index=False).encode("utf-8")
 
-                predicted_index = int(
-                    np.argmax(probabilities)
-                )
+        st.download_button(
+            "⬇️ Export History as CSV",
+            data=csv_data,
+            file_name="complaint_history.csv",
+            mime="text/csv"
+        )
 
-                category = label_encoder.inverse_transform(
-                    [predicted_index]
-                )[0]
+        if not filtered.empty:
+            st.subheader("View a Saved Complaint")
 
-                confidence = float(
-                    probabilities[predicted_index]
-                ) * 100
+            selected_id = st.selectbox(
+                "Choose complaint ID",
+                filtered["id"].tolist()
+            )
 
-                st.subheader("✅ Prediction Result")
-                st.success(
-                    f"Predicted Category: "
-                    f"{category.replace('_', ' ').title()}"
-                )
+            selected = filtered[
+                filtered["id"] == selected_id
+            ].iloc[0]
 
-                st.metric(
-                    "Model Confidence",
-                    f"{confidence:.2f}%"
-                )
+            st.markdown("#### Complaint")
+            st.write(selected["complaint"])
 
-                if confidence < 60:
-                    st.warning(
-                        "The model is less confident about "
-                        "this prediction. Please review it."
-                    )
+            st.markdown("#### Predicted Category")
+            st.success(selected["category"])
 
-                st.subheader("Category Probability Scores")
+            st.metric(
+                "Saved Confidence",
+                f"{selected['confidence']:.2f}%"
+            )
 
-                score_data = pd.DataFrame({
-                    "Category": [
-                        name.replace("_", " ").title()
-                        for name in label_encoder.classes_
-                    ],
-                    "Probability (%)": probabilities * 100
-                }).sort_values(
-                    "Probability (%)", ascending=True
-                )
+            st.caption(f"Saved at: {selected['created_at']}")
 
-                score_fig = px.bar(
-                    score_data,
-                    x="Probability (%)",
-                    y="Category",
-                    orientation="h",
-                    template="plotly_dark",
-                    title="Prediction Scores by Category"
-                )
 
-                st.plotly_chart(
-                    score_fig, use_container_width=True
-                )
+# ====================================================
+# PAGE 5: VOICE ASSISTANT & HELP
+# ====================================================
 
-        except Exception as e:
-            st.error("Prediction failed.")
-            st.code(str(e))
+elif page == "🎙️ Voice Assistant & Help":
+
+    st.title("🎙️ Voice Assistant & Help")
+
+    st.write(
+        "Your guide to using the Complaint Intelligence website."
+    )
+
+    voice_player(
+        WELCOME_TEXT,
+        "🔊 Listen to Welcome Message"
+    )
+
+    instructions = (
+        "First, open the Complaint Analyzer page. "
+        "Enter the customer complaint in the text box. "
+        "Click Classify Complaint. Read the predicted category "
+        "and model confidence. Your result will be saved in "
+        "Complaint History. Open the Analytics page to explore "
+        "model performance. Please avoid entering sensitive "
+        "personal information."
+    )
+
+    st.subheader("📖 How to use this website")
+
+    steps = [
+        "Open Complaint Analyzer.",
+        "Enter the customer's complaint.",
+        "Click Classify Complaint.",
+        "Review the predicted category and confidence.",
+        "Open Complaint History to find saved results.",
+        "Use Analytics & Insights to review model performance."
+    ]
+
+    for i, step in enumerate(steps, start=1):
+        st.markdown(f"**Step {i}.** {step}")
+
+    voice_player(
+        instructions,
+        "🔊 Listen to Instructions"
+    )
+
+    st.divider()
+    st.subheader("📚 Supported Categories")
+
+    for name in CATEGORY_NAMES.values():
+        st.markdown(f"- {name}")
+
+    st.warning(
+        "This is an academic AI prototype. Predictions may be "
+        "incorrect and should be reviewed before making decisions."
+    )
+
+
+# ---------------- FOOTER ----------------
 
 st.divider()
-st.subheader("🗂️ Supported Complaint Categories")
-
-categories = [
-    "Credit Card",
-    "Credit Reporting",
-    "Debt Collection",
-    "Mortgages and Loans",
-    "Retail Banking"
-]
-
-st.write(" • ".join(categories))
-
 st.caption(
-    "Academic project prototype | "
-    "CNN test accuracy: 88.34%"
+    "Complaint Intelligence | Academic Project Prototype | "
+    "CNN Test Accuracy: 88.34%"
 )
