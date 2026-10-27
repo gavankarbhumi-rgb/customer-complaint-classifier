@@ -27,85 +27,27 @@ st.set_page_config(
 
 # ---------------- PREMIUM UI ----------------
 
+
 st.markdown("""
-
-/* Colourful complaint history table */
-[data-testid="stDataFrame"] {
-    border: 1px solid #7C3AED;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-/* Dark purple table background */
-[data-testid="stDataFrame"] iframe {
-    background-color: #1A1237;
-}
-
-/* Colourful dropdowns and multiselect */
-.stMultiSelect [data-baseweb="select"] > div,
-.stSelectbox [data-baseweb="select"] > div {
-    background-color: #21183F !important;
-    border: 1px solid #A855F7 !important;
-    border-radius: 12px !important;
-}
-
-/* Dropdown text */
-.stMultiSelect input,
-.stSelectbox input {
-    color: #F5F3FF !important;
-}
-
-/* Selected category chips */
-.stMultiSelect [data-baseweb="tag"] {
-    background-color: #7C3AED !important;
-    color: white !important;
-    border-radius: 8px !important;
-}
-
-/* Export button */
-.stDownloadButton button {
-    background: linear-gradient(100deg, #7C3AED, #C026D3) !important;
-    color: white !important;
-    border: 1px solid #C084FC !important;
-    border-radius: 12px !important;
-    font-weight: 700 !important;
-}
-
-/* Complaint ID dropdown and input fields */
-.stSelectbox label,
-.stMultiSelect label {
-    color: #DDD6FE !important;
-}
-
-/* Table and widget borders */
-[data-testid="stDataFrame"] *,
-.stMultiSelect [data-baseweb="select"],
-.stSelectbox [data-baseweb="select"] {
-    border-color: rgba(192, 132, 252, 0.35);
-}
-
-/* Export button hover effect */
-.stDownloadButton button:hover {
-    background: linear-gradient(100deg, #9333EA, #E879F9) !important;
-    border-color: #E9D5FF !important;
-}
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* Main app background */
 .stApp {
     background:
-      radial-gradient(ellipse at top left,#25205a 0%,transparent 42%),
-      linear-gradient(135deg,#080b18,#10152b 55%,#17112e);
+      radial-gradient(ellipse at top left, #25205a 0%, transparent 42%),
+      linear-gradient(135deg, #080b18, #10152b 55%, #17112e);
     color: #f5f3ff;
     font-family: Inter, sans-serif;
 }
+
 .block-container {
     max-width: 1400px;
     padding-top: 2rem;
     padding-bottom: 3rem;
 }
 
+/* Sidebar */
 [data-testid="stSidebar"] {
     background:
         radial-gradient(ellipse at top left, #30205c 0%, transparent 55%),
@@ -145,33 +87,107 @@ st.markdown("""
     border-color: rgba(167, 139, 250, 0.25);
 }
 
-h1,h2,h3 { color:#f5f3ff !important; }
-p,label { color:#d6d3e8; }
+/* Headings and text */
+h1, h2, h3 {
+    color: #f5f3ff !important;
+}
+
+p, label {
+    color: #d6d3e8;
+}
+
+hr {
+    border-color: #39305d;
+}
+
+/* Metric cards */
 div[data-testid="stMetric"] {
-    background:linear-gradient(135deg,#1b2140,#25204b);
-    border:1px solid #49416f;
-    padding:20px;
-    border-radius:18px;
+    background: linear-gradient(135deg, #1b2140, #25204b);
+    border: 1px solid #49416f;
+    padding: 20px;
+    border-radius: 18px;
 }
-.stButton>button {
-    background:linear-gradient(100deg,#7c3aed,#a855f7);
-    color:white;
-    border:1px solid #a78bfa;
-    border-radius:12px;
-    min-height:44px;
-    font-weight:700;
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(100deg, #7c3aed, #a855f7);
+    color: white;
+    border: 1px solid #a78bfa;
+    border-radius: 12px;
+    min-height: 44px;
+    font-weight: 700;
 }
-.stTextArea textarea, .stTextInput input {
-    background:#131a31;
-    color:white;
-    border:1px solid #49416f;
-    border-radius:12px;
+
+/* Text input fields */
+.stTextArea textarea,
+.stTextInput input {
+    background: #131a31;
+    color: white;
+    border: 1px solid #49416f;
+    border-radius: 12px;
 }
-hr { border-color:#39305d; }
-footer,#MainMenu { visibility:hidden; }
+
+/* Complaint history table frame */
+[data-testid="stDataFrame"] {
+    border: 1px solid #7c3aed;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* Table iframe background where supported */
+[data-testid="stDataFrame"] iframe {
+    background-color: #1a1237;
+}
+
+/* Category filter and complaint ID dropdowns */
+.stMultiSelect [data-baseweb="select"] > div,
+.stSelectbox [data-baseweb="select"] > div {
+    background-color: #21183f !important;
+    border: 1px solid #a855f7 !important;
+    border-radius: 12px !important;
+    color: #f5f3ff !important;
+}
+
+/* Dropdown text */
+.stMultiSelect input,
+.stSelectbox input {
+    color: #f5f3ff !important;
+}
+
+/* Selected category chips */
+.stMultiSelect [data-baseweb="tag"] {
+    background-color: #7c3aed !important;
+    color: white !important;
+    border-radius: 8px !important;
+}
+
+/* Dropdown labels */
+.stSelectbox label,
+.stMultiSelect label {
+    color: #ddd6fe !important;
+}
+
+/* Export History as CSV button */
+.stDownloadButton button {
+    background: linear-gradient(100deg, #7c3aed, #c026d3) !important;
+    color: white !important;
+    border: 1px solid #c084fc !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Export button hover */
+.stDownloadButton button:hover {
+    background: linear-gradient(100deg, #9333ea, #e879f9) !important;
+    border-color: #e9d5ff !important;
+}
+
+/* Hide Streamlit footer and menu */
+footer, #MainMenu {
+    visibility: hidden;
+}
 </style>
 """, unsafe_allow_html=True)
-
 
 # ---------------- NAVIGATION ----------------
 
