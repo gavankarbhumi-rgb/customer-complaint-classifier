@@ -341,7 +341,7 @@ if page == "🏠 Home Dashboard":
 
     st.subheader("📊 Model Performance")
 
-        fig2 = px.bar(
+            fig2 = px.bar(
         chart_data,
         x="Category",
         y="Score (%)",
@@ -355,7 +355,6 @@ if page == "🏠 Home Dashboard":
             "F1 Score (%)": "#F472B6"
         }
     )
-
     fig2.update_traces(
         marker_line_color="#E9D5FF",
         marker_line_width=0.7,
