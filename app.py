@@ -341,7 +341,7 @@ if page == "🏠 Home Dashboard":
 
     st.subheader("📊 Model Performance")
 
-            fig2 = px.bar(
+    fig2 = px.bar(
         chart_data,
         x="Category",
         y="Score (%)",
@@ -355,6 +355,7 @@ if page == "🏠 Home Dashboard":
             "F1 Score (%)": "#F472B6"
         }
     )
+
     fig2.update_traces(
         marker_line_color="#E9D5FF",
         marker_line_width=0.7,
@@ -380,9 +381,6 @@ if page == "🏠 Home Dashboard":
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    
-
-
     st.button(
         "🚀 Start Exploring",
         key="start_exploring",
@@ -390,11 +388,6 @@ if page == "🏠 Home Dashboard":
             {"page": "🔍 Complaint Analyzer"}
         )
     )
-
-
-
-
-
 # ====================================================
 # PAGE 2: COMPLAINT ANALYZER
 # ====================================================
