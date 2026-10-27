@@ -18,6 +18,26 @@ st.set_page_config(
     layout="wide"
 )
 
+# ===== SIDEBAR NAVIGATION =====
+
+st.sidebar.markdown("# 💜 Complaint AI")
+st.sidebar.caption("Intelligent Complaint Management")
+
+page = st.sidebar.radio(
+    "NAVIGATION",
+    [
+        "🏠 Home Dashboard",
+        "🔍 Complaint Analyzer",
+        "📈 Analytics & Insights",
+        "🎙️ Voice Assistant & Help"
+    ]
+)
+
+st.sidebar.divider()
+st.sidebar.markdown("### 🤖 Model Status")
+st.sidebar.caption("CNN Deep Learning Model")
+st.sidebar.caption("Test Accuracy: 88.34%")
+
 MODEL_REPO = "Bhumiiiiii26/customer-complaint-cnn"
 MODEL_FILE = "customer_complaint_cnn (2).keras"
 
