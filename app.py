@@ -372,10 +372,30 @@ if page == "🏠 Home Dashboard":
 # PAGE 2: COMPLAINT ANALYZER
 # ====================================================
 
+
 elif page == "🔍 Complaint Analyzer":
 
     st.title("🔍 Complaint Analyzer")
     st.write("Enter the complaint below to classify it using CNN.")
+
+    # Instructions yahan add hongi
+
+   
+    with st.expander("📖 How to Use the Complaint Analyzer", expanded=True):
+        st.markdown("""
+        **Follow these simple steps:**
+
+        1. Enter your customer complaint in the text box below.
+        2. Describe the main problem clearly.
+        3. Click the **🚀 Classify Complaint** button.
+        4. Wait while the AI model analyzes your complaint.
+        5. View the predicted category and confidence score.
+
+        **💡 Tips for better results**
+        - Write your complaint in clear English.
+        - Include the main issue and relevant details.
+        - Do not enter passwords or sensitive personal information.
+        """)
 
     complaint = st.text_area(
         "Customer complaint",
