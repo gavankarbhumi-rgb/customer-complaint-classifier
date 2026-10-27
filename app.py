@@ -28,6 +28,68 @@ st.set_page_config(
 # ---------------- PREMIUM UI ----------------
 
 st.markdown("""
+
+/* Colourful complaint history table */
+[data-testid="stDataFrame"] {
+    border: 1px solid #7C3AED;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* Dark purple table background */
+[data-testid="stDataFrame"] iframe {
+    background-color: #1A1237;
+}
+
+/* Colourful dropdowns and multiselect */
+.stMultiSelect [data-baseweb="select"] > div,
+.stSelectbox [data-baseweb="select"] > div {
+    background-color: #21183F !important;
+    border: 1px solid #A855F7 !important;
+    border-radius: 12px !important;
+}
+
+/* Dropdown text */
+.stMultiSelect input,
+.stSelectbox input {
+    color: #F5F3FF !important;
+}
+
+/* Selected category chips */
+.stMultiSelect [data-baseweb="tag"] {
+    background-color: #7C3AED !important;
+    color: white !important;
+    border-radius: 8px !important;
+}
+
+/* Export button */
+.stDownloadButton button {
+    background: linear-gradient(100deg, #7C3AED, #C026D3) !important;
+    color: white !important;
+    border: 1px solid #C084FC !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* Complaint ID dropdown and input fields */
+.stSelectbox label,
+.stMultiSelect label {
+    color: #DDD6FE !important;
+}
+
+/* Table and widget borders */
+[data-testid="stDataFrame"] *,
+.stMultiSelect [data-baseweb="select"],
+.stSelectbox [data-baseweb="select"] {
+    border-color: rgba(192, 132, 252, 0.35);
+}
+
+/* Export button hover effect */
+.stDownloadButton button:hover {
+    background: linear-gradient(100deg, #9333EA, #E879F9) !important;
+    border-color: #E9D5FF !important;
+}
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
