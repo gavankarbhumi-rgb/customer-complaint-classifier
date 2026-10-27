@@ -621,20 +621,50 @@ elif page == "📈 Analytics & Insights":
     )
 
     fig2 = px.bar(
-        chart_data,
-        x="Category",
-        y="Score (%)",
-        color="Metric",
-        barmode="group",
-        template="plotly_dark",
-        title="CNN Performance by Category"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+    chart_data,
+    x="Category",
+    y="Score (%)",
+    color="Metric",
+    barmode="group",
+    template="plotly_dark",
+    title="CNN Performance by Category",
+    color_discrete_map={
+        "Precision (%)": "#A855F7",
+        "Recall (%)": "#22D3EE",
+        "F1 Score (%)": "#F472B6"
+    }
+)
 
-    st.info(
-        "The CNN achieved 88.34% test accuracy in the "
-        "recorded model evaluation."
-    )
+fig2.update_layout(
+    paper_bgcolor="#0F0A23",
+    plot_bgcolor="#1A1237",
+    font=dict(color="#F3E8FF"),
+    title_font=dict(color="#C084FC", size=20),
+    legend=dict(
+        font=dict(color="#F3E8FF"),
+        bgcolor="rgba(15,10,35,0)"
+    ),
+    xaxis=dict(
+        color="#DDD6FE",
+        showgrid=False,
+        tickangle=-15,
+        title="Category"
+    ),
+    yaxis=dict(
+        color="#DDD6FE",
+        gridcolor="rgba(192,132,252,0.2)",
+        title="Score (%)",
+        range=[0, 100]
+    ),
+    bargap=0.22
+)
+
+st.plotly_chart(fig2, use_container_width=True)
+
+st.info(
+    "The CNN achieved 88.34% test accuracy in the "
+    "recorded model evaluation."
+)
 
 
 # ====================================================
