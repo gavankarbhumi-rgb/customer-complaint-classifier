@@ -339,47 +339,7 @@ if page == "🏠 Home Dashboard":
         st.markdown("#### 🎙️ Voice Assistant")
         st.write("Listen to the welcome message and instructions.")
 
-    st.subheader("📊 Model Performance")
-
-    fig2 = px.bar(
-        chart_data,
-        x="Category",
-        y="Score (%)",
-        color="Metric",
-        barmode="group",
-        template="plotly_dark",
-        title="CNN Performance by Category",
-        color_discrete_map={
-            "Precision (%)": "#A855F7",
-            "Recall (%)": "#22D3EE",
-            "F1 Score (%)": "#F472B6"
-        }
-    )
-
-    fig2.update_traces(
-        marker_line_color="#E9D5FF",
-        marker_line_width=0.7,
-        opacity=0.95
-    )
-
-    fig2.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(15,10,35,0.8)",
-        font=dict(color="#F3E8FF"),
-        title_font=dict(color="#C084FC"),
-        legend_title_font=dict(color="#C4B5FD"),
-        xaxis=dict(
-            showgrid=False,
-            tickangle=-20
-        ),
-        yaxis=dict(
-            gridcolor="rgba(192,132,252,0.15)",
-            title="Performance Score (%)"
-        ),
-        bargap=0.22
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
+    
 
     st.button(
         "🚀 Start Exploring",
