@@ -580,7 +580,24 @@ elif page == "📈 Analytics & Insights":
         text="Test Accuracy (%)",
         template="plotly_dark"
     )
-    fig.update_layout(yaxis_range=[0, 100], showlegend=False)
+    fig.update_layout(
+    yaxis_range=[0, 100],
+    showlegend=False,
+    paper_bgcolor="#0F0A23",
+    plot_bgcolor="#1A1237",
+    font=dict(color="#F3E8FF"),
+    title_font=dict(color="#C084FC"),
+    xaxis=dict(
+        color="#DDD6FE",
+        showgrid=False
+    ),
+    yaxis=dict(
+        color="#DDD6FE",
+        gridcolor="rgba(192,132,252,0.2)",
+        title="Test Accuracy (%)"
+    )
+)
+
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("CNN Classification Metrics")
