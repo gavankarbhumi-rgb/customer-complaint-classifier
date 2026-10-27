@@ -18,6 +18,125 @@ st.set_page_config(
     layout="wide"
 )
 
+# ===== PREMIUM DARK PURPLE UI =====
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.stApp {
+    background:
+        radial-gradient(ellipse at top left, #25205a 0%, transparent 40%),
+        linear-gradient(135deg, #080b18 0%, #10152b 55%, #17112e 100%);
+    color: #f5f3ff;
+    font-family: 'Inter', sans-serif;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+    max-width: 1400px;
+}
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #11152b 0%, #17112e 100%);
+    border-right: 1px solid rgba(167, 139, 250, 0.22);
+}
+
+[data-testid="stSidebar"] h1 {
+    color: #c4b5fd;
+    font-weight: 800;
+}
+
+h1, h2, h3 {
+    color: #f5f3ff !important;
+    letter-spacing: -0.5px;
+}
+
+p, label, .stMarkdown {
+    color: #d6d3e8;
+}
+
+div[data-testid="stMetric"] {
+    background: linear-gradient(135deg, #1b2140, #25204b);
+    border: 1px solid rgba(167, 139, 250, 0.28);
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #c4b5fd;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.stButton > button {
+    background: linear-gradient(100deg, #7c3aed, #a855f7);
+    color: #ffffff;
+    border: 1px solid rgba(216, 180, 254, 0.35);
+    border-radius: 12px;
+    padding: 0.65rem 1.15rem;
+    font-weight: 700;
+    min-height: 45px;
+    transition: all 0.2s ease;
+    box-shadow: 0 5px 18px rgba(124, 58, 237, 0.22);
+}
+
+.stButton > button:hover {
+    background: linear-gradient(100deg, #8b5cf6, #c084fc);
+    border-color: #ddd6fe;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+    color: #ffffff;
+}
+
+.stTextArea textarea {
+    background: #131a31;
+    color: #ffffff;
+    border: 1px solid #49416f;
+    border-radius: 14px;
+}
+
+.stTextArea textarea:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.18);
+}
+
+div[data-baseweb="select"] > div {
+    background-color: #171d36;
+    border-color: #49416f;
+    border-radius: 10px;
+}
+
+hr {
+    border-color: rgba(167, 139, 250, 0.2);
+}
+
+[data-testid="stAlert"] {
+    border-radius: 12px;
+}
+
+[data-testid="stPlotlyChart"] {
+    background: rgba(24, 29, 55, 0.65);
+    border: 1px solid rgba(167, 139, 250, 0.16);
+    border-radius: 16px;
+    padding: 8px;
+}
+
+footer {
+    visibility: hidden;
+}
+
+#MainMenu {
+    visibility: hidden;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ===== SIDEBAR NAVIGATION =====
 
 st.sidebar.markdown("# 💜 Complaint AI")
