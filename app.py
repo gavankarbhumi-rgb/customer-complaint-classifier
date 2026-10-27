@@ -380,6 +380,22 @@ elif page == "🔍 Complaint Analyzer":
 
     # Instructions yahan add hongi
 
+    instruction_text = """
+    Welcome to the Complaint Analyzer.
+
+    Step 1: Enter your customer complaint in the text box.
+    Step 2: Describe the main problem clearly.
+    Step 3: Click the Classify Complaint button.
+    Step 4: Wait while the AI model analyzes your complaint.
+    Step 5: View the predicted category and confidence score.
+
+    For better results, write your complaint in clear English.
+    Include the main issue and relevant details.
+    Do not enter passwords or sensitive personal information.
+    """
+
+    voice_player(instruction_text, "🔊 Listen to Instructions")
+
    
     with st.expander("📖 How to Use the Complaint Analyzer", expanded=True):
         st.markdown("""
