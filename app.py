@@ -43,10 +43,46 @@ st.markdown("""
     padding-top: 2rem;
     padding-bottom: 3rem;
 }
+
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg,#11152b,#17112e);
-    border-right: 1px solid #39305d;
+    background:
+        radial-gradient(ellipse at top left, #30205c 0%, transparent 55%),
+        linear-gradient(180deg, #11152b 0%, #0b1020 100%);
+    border-right: 1px solid rgba(167, 139, 250, 0.35);
 }
+
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h1 {
+    color: #c4b5fd !important;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] > label {
+    color: #c4b5fd;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] {
+    gap: 8px;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] label {
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+    background: rgba(167, 139, 250, 0.12);
+}
+
+[data-testid="stSidebar"] hr {
+    border-color: rgba(167, 139, 250, 0.25);
+}
+
 h1,h2,h3 { color:#f5f3ff !important; }
 p,label { color:#d6d3e8; }
 div[data-testid="stMetric"] {
@@ -80,16 +116,25 @@ footer,#MainMenu { visibility:hidden; }
 st.sidebar.markdown("# 💜 Complaint AI")
 st.sidebar.caption("Intelligent Complaint Management")
 
+
+pages = [
+    "🏠 Home Dashboard",
+    "🔍 Complaint Analyzer",
+    "📈 Analytics & Insights",
+    "🗂️ Complaint History",
+    "🎙️ Voice Assistant & Help"
+]
+
+if "page" not in st.session_state:
+    st.session_state["page"] = "🏠 Home Dashboard"
+
 page = st.sidebar.radio(
-    "NAVIGATION",
-    [
-        "🏠 Home Dashboard",
-        "🔍 Complaint Analyzer",
-        "📈 Analytics & Insights",
-        "🗂️ Complaint History",
-        "🎙️ Voice Assistant & Help"
-    ]
+    "✦ MAIN MENU",
+    pages,
+    key="page",
+    label_visibility="visible"
 )
+
 
 st.sidebar.divider()
 st.sidebar.markdown("### 🤖 AI Model")
@@ -308,9 +353,11 @@ if page == "🏠 Home Dashboard":
     fig.update_layout(yaxis_range=[0, 100], showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
 
-    if st.button("🚀 Start Exploring"):
-        st.session_state["navigation_page"] = "🔍 Complaint Analyzer"
-        st.rerun()
+    
+if st.button("🚀 Start Exploring"):
+    st.session_state["page"] = "🔍 Complaint Analyzer"
+    st.rerun()
+
 
 
 # ====================================================
